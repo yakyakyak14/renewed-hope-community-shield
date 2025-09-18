@@ -1,0 +1,245 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    /* Nigerian Colors Theme - Green and White */
+    --background: 0 0% 100%;
+    --foreground: 120 100% 15%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 120 100% 15%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 120 100% 15%;
+
+    --primary: 120 100% 25%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 120 30% 95%;
+    --secondary-foreground: 120 100% 20%;
+
+    --muted: 120 20% 96%;
+    --muted-foreground: 120 15% 40%;
+
+    --accent: 120 50% 85%;
+    --accent-foreground: 120 100% 20%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 120 25% 85%;
+    --input: 120 25% 90%;
+    --ring: 120 100% 25%;
+
+    --radius: 0.5rem;
+
+    --sidebar-background: 0 0% 98%;
+
+    --sidebar-foreground: 240 5.3% 26.1%;
+
+    --sidebar-primary: 240 5.9% 10%;
+
+    --sidebar-primary-foreground: 0 0% 98%;
+
+    --sidebar-accent: 240 4.8% 95.9%;
+
+    --sidebar-accent-foreground: 240 5.9% 10%;
+
+    --sidebar-border: 220 13% 91%;
+
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    /* Nigerian Colors Dark Theme */
+    --background: 120 100% 8%;
+    --foreground: 0 0% 100%;
+
+    --card: 120 100% 10%;
+    --card-foreground: 0 0% 100%;
+
+    --popover: 120 100% 10%;
+    --popover-foreground: 0 0% 100%;
+
+    --primary: 120 100% 35%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 120 50% 15%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 120 30% 20%;
+    --muted-foreground: 120 10% 70%;
+
+    --accent: 120 40% 25%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 62.8% 50%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 120 30% 25%;
+    --input: 120 30% 25%;
+    --ring: 120 100% 35%;
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+
+  /* Mobile-first responsive design */
+  html {
+    @apply touch-manipulation;
+  }
+
+  /* Mobile app optimizations */
+  * {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+
+  input, textarea, select {
+    -webkit-user-select: text;
+    -khtml-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    user-select: text;
+  }
+
+  /* Safe area insets for mobile devices */
+  .safe-area-top {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .safe-area-left {
+    padding-left: env(safe-area-inset-left);
+  }
+
+  .safe-area-right {
+    padding-right: env(safe-area-inset-right);
+  }
+
+  /* Nigerian Waves Animation */
+  .nigerian-wave-1 {
+    animation: wave-flow 12s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  }
+
+  .nigerian-wave-2 {
+    animation: wave-flow 15s cubic-bezier(0.4, 0, 0.2, 1) infinite reverse;
+  }
+
+  .nigerian-wave-3 {
+    animation: wave-gentle 10s ease-in-out infinite;
+  }
+
+  /* Full-screen Nigerian waves background container */
+  .nigerian-waves-background {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    z-index: -1;
+    pointer-events: none;
+    will-change: transform;
+    background: #F9F9F9; /* base background */
+    contain: strict;
+  }
+
+  /* Generic wave layer optimizations */
+  .wave-layer {
+    will-change: transform, opacity;
+    transform: translate3d(0, 0, 0);
+    backface-visibility: hidden;
+  }
+
+  /* Click ripple visual */
+  .ripple {
+    position: absolute;
+    width: 150px;
+    height: 150px;
+    border-radius: 9999px;
+    background: rgba(0, 135, 81, 0.7);
+    filter: blur(0.5px);
+    transform: translate(-50%, -50%) scale(0);
+    animation: ripple 1.5s ease-out forwards;
+    pointer-events: none;
+    mix-blend-mode: multiply;
+  }
+
+  /* Keyframes for subtle wave motion */
+  @keyframes wave-flow {
+    0% {
+      transform: translateX(0);
+    }
+    50% {
+      transform: translateX(-2%);
+    }
+    100% {
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes wave-gentle {
+    0% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(1%);
+    }
+    100% {
+      transform: translateY(0);
+    }
+  }
+
+  /* Ripple animation */
+  @keyframes ripple {
+    0% {
+      transform: translate(-50%, -50%) scale(0);
+      opacity: 0.8;
+    }
+    70% {
+      opacity: 0.35;
+    }
+    100% {
+      transform: translate(-50%, -50%) scale(1);
+      opacity: 0;
+    }
+  }
+
+  /* Reduced motion support */
+  @media (prefers-reduced-motion: reduce) {
+    .nigerian-wave-1,
+    .nigerian-wave-2,
+    .nigerian-wave-3 {
+      animation: none;
+    }
+  }
+}
