@@ -166,7 +166,7 @@ All colors MUST be HSL.
     width: 100vw;
     height: 100vh;
     overflow: hidden;
-    z-index: -1;
+    z-index: 0;
     pointer-events: none;
     will-change: transform;
     background: #F9F9F9; /* base background */

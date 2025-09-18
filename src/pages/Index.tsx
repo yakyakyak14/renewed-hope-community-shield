@@ -6,7 +6,7 @@ import CommunityImpactProjects from "@/components/CommunityImpactProjects";
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-background relative overflow-hidden">
+    <div className="min-h-screen relative overflow-hidden">
       <div className="relative z-10">
         <TournamentHero />
         <TournamentStructure />
