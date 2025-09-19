@@ -60,8 +60,8 @@ const NigerianWavesBackground = () => {
     const geo = new THREE.PlaneGeometry(width, height, segX, segY);
     const basePositions = geo.attributes.position.array.slice() as Float32Array;
 
-    // Closer to official Nigerian green but slightly richer
-    const svg = "<svg xmlns='http://www.w3.org/2000/svg' width='900' height='600' viewBox='0 0 3 2'><rect width='3' height='2' fill='#00965C'/><rect x='1' width='1' height='2' fill='#ffffff'/></svg>";
+    // Nudge to saturated field-grass green with similar brightness
+    const svg = "<svg xmlns='http://www.w3.org/2000/svg' width='900' height='600' viewBox='0 0 3 2'><rect width='3' height='2' fill='#009746'/><rect x='1' width='1' height='2' fill='#ffffff'/></svg>";
     const dataUrl = 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
     const texLoader = new THREE.TextureLoader();
     const tex = texLoader.load(dataUrl);
