@@ -60,8 +60,8 @@ const NigerianWavesBackground = () => {
     const geo = new THREE.PlaneGeometry(width, height, segX, segY);
     const basePositions = geo.attributes.position.array.slice() as Float32Array;
 
-    // 20% greener: original #008753 -> increase green channel ~20% to #00A253
-    const svg = "<svg xmlns='http://www.w3.org/2000/svg' width='900' height='600' viewBox='0 0 3 2'><rect width='3' height='2' fill='#00A253'/><rect x='1' width='1' height='2' fill='#ffffff'/></svg>";
+    // 20% more grass-green relative to previous: shift greener and slightly brighter
+    const svg = "<svg xmlns='http://www.w3.org/2000/svg' width='900' height='600' viewBox='0 0 3 2'><rect width='3' height='2' fill='#00B259'/><rect x='1' width='1' height='2' fill='#ffffff'/></svg>";
     const dataUrl = 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
     const texLoader = new THREE.TextureLoader();
     const tex = texLoader.load(dataUrl);
@@ -83,6 +83,8 @@ const NigerianWavesBackground = () => {
 
     const flag = new THREE.Mesh(geo, mat);
     scene.add(flag);
+    // Subtle position offset for composition
+    flag.position.set(-0.1, -0.05, 0);
 
     // Animation state
     const clock = new THREE.Clock();
@@ -118,9 +120,9 @@ const NigerianWavesBackground = () => {
     const onPointerMove = (e: PointerEvent) => {
       const nx = (e.clientX / window.innerWidth) * 2 - 1;
       const ny = (e.clientY / window.innerHeight) * 2 - 1;
-      // amount: [0.06 yaw, 0.04 pitch]
-      targetRotY = nx * 0.06;
-      targetRotX = -ny * 0.04;
+      // amount: [0.08 yaw, 0.06 pitch] for slightly stronger parallax
+      targetRotY = nx * 0.08;
+      targetRotX = -ny * 0.06;
     };
     window.addEventListener('pointermove', onPointerMove, { passive: true });
 
@@ -136,14 +138,14 @@ const NigerianWavesBackground = () => {
 
     // Wheel interaction: quick speed pulses based on wheel delta
     const onWheel = (e: WheelEvent) => {
-      const delta = clamp(e.deltaY / 800, -0.25, 0.25);
-      speedBoost = clamp(speedBoost + delta, -0.5, 0.5);
+      const delta = clamp(e.deltaY / 500, -0.35, 0.35);
+      speedBoost = clamp(speedBoost + delta, -0.8, 0.8);
     };
     window.addEventListener('wheel', onWheel, { passive: true });
 
     // Click interaction: momentary gust bump to amplitude
     const onClick = () => {
-      ampBoost = clamp(ampBoost + 0.1, 0, 0.25);
+      ampBoost = clamp(ampBoost + 0.16, 0, 0.35);
     };
     window.addEventListener('click', onClick, { passive: true as any });
 
@@ -180,12 +182,12 @@ const NigerianWavesBackground = () => {
       const tRot = (u.time / 4.4) % 2;
       const kRot = tRot < 1 ? tRot : 2 - tRot;
       const yoRot = inOutSine(kRot);
-      const baseRotX = 0.02 + ( -0.02 - 0.02) * yoRot; // 0.02 -> -0.02
-      const baseRotY = -0.18 + ( 0.18 - (-0.18)) * yoRot; // -0.18 -> 0.18
+      const baseRotX = 0.03 + ( -0.03 - 0.03) * yoRot; // 0.03 -> -0.03
+      const baseRotY = -0.22 + ( 0.22 - (-0.22)) * yoRot; // -0.22 -> 0.22
 
       // Camera subtle parallax (12s sine)
       const tCam = u.time / 12.0;
-      camera.position.set(camBase.x + Math.sin(tCam * Math.PI * 2) * 0.06, camBase.y, camBase.z + Math.cos(tCam * Math.PI * 2) * 0.04);
+      camera.position.set(camBase.x + Math.sin(tCam * Math.PI * 2) * 0.07, camBase.y, camBase.z + Math.cos(tCam * Math.PI * 2) * 0.05);
 
       // Vertex deformation (skip if reduced motion)
       const pos = geo.attributes.position as THREE.BufferAttribute;
@@ -207,9 +209,9 @@ const NigerianWavesBackground = () => {
         geo.computeVertexNormals();
       }
 
-      // decay interactive boosts
-      speedBoost *= 0.92;
-      ampBoost *= 0.92;
+      // decay interactive boosts (slower decay for more feel)
+      speedBoost *= 0.94;
+      ampBoost *= 0.94;
 
       // Apply rotations with pointer parallax lerp
       flag.rotation.x += (baseRotX + targetRotX - flag.rotation.x) * 0.08;
