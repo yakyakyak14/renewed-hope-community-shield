@@ -54,8 +54,9 @@ const NigerianWavesBackground = () => {
     const amb = new THREE.AmbientLight(0xffffff, 0.18);
     scene.add(hemi, dir, amb);
 
-    // Geometry & Material
-    const width = 3, height = 2, segX = 128, segY = 96;
+    // Geometry & Material (scaled down 40%)
+    const scale = 0.6;
+    const width = 3 * scale, height = 2 * scale, segX = 128, segY = 96;
     const geo = new THREE.PlaneGeometry(width, height, segX, segY);
     const basePositions = geo.attributes.position.array.slice() as Float32Array;
 
@@ -75,6 +76,8 @@ const NigerianWavesBackground = () => {
       metalness: 0.0,
       roughness: 0.7,
       side: THREE.DoubleSide,
+      transparent: true,
+      opacity: 0.4, // 60% less opaque (more transparent)
     });
 
     const flag = new THREE.Mesh(geo, mat);
@@ -86,6 +89,8 @@ const NigerianWavesBackground = () => {
     const isReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const u = { time: 0, amp: 0.12, freqX: 2.1, freqY: 1.2, speed: 1.0, edge: 0.34, skew: 0.18 };
     let speedScale = 1.0;
+    let speedBoost = 0.0; // wheel-based temporary speed boost
+    let ampBoost = 0.0;   // click-based temporary amplitude boost
     let targetRotX = 0, targetRotY = 0; // pointer parallax targets
 
     // Helpers
@@ -128,6 +133,19 @@ const NigerianWavesBackground = () => {
     window.addEventListener('scroll', onScroll, { passive: true });
     onScroll();
 
+    // Wheel interaction: quick speed pulses based on wheel delta
+    const onWheel = (e: WheelEvent) => {
+      const delta = clamp(e.deltaY / 800, -0.25, 0.25);
+      speedBoost = clamp(speedBoost + delta, -0.5, 0.5);
+    };
+    window.addEventListener('wheel', onWheel, { passive: true });
+
+    // Click interaction: momentary gust bump to amplitude
+    const onClick = () => {
+      ampBoost = clamp(ampBoost + 0.1, 0, 0.25);
+    };
+    window.addEventListener('click', onClick, { passive: true as any });
+
     // Visibility pause
     const onVis = () => {
       const nowVisible = !document.hidden;
@@ -145,7 +163,7 @@ const NigerianWavesBackground = () => {
     // Main loop
     const animate = () => {
       if (!running) { return; }
-      const dt = clock.getDelta() * u.speed * speedScale;
+      const dt = clock.getDelta() * u.speed * Math.max(0.1, speedScale + speedBoost);
       u.time += dt;
 
       // Timelines (yoyo)
@@ -155,6 +173,7 @@ const NigerianWavesBackground = () => {
       const yo = inOutSine(k);
       const amp = 0.08 + yo * (0.14 - 0.08);
       const waveSpeed = 0.9 + yo * (1.2 - 0.9);
+      const ampEffective = amp + ampBoost;
 
       // Flag base rotation yoyo (4.4s)
       const tRot = (u.time / 4.4) % 2;
@@ -172,7 +191,6 @@ const NigerianWavesBackground = () => {
       const arr = pos.array as Float32Array;
       const base = basePositions as unknown as number[];
       const hw = width * 0.5;
-      const hh = height * 0.5;
       if (!isReduced) {
         for (let i = 0; i < arr.length; i += 3) {
           const x = base[i];
@@ -180,13 +198,17 @@ const NigerianWavesBackground = () => {
           const nx = Math.abs(x / hw);
           const edgeFall = 1 - smoothstep(1 - u.edge, 1, nx);
           let z = base[i + 2];
-          z += Math.sin((x * u.freqX + u.time * waveSpeed) + y * u.skew) * amp * edgeFall;
-          z += 0.4 * Math.sin((y * u.freqY + u.time * 0.7)) * (amp * 0.5);
+          z += Math.sin((x * u.freqX + u.time * waveSpeed) + y * u.skew) * ampEffective * edgeFall;
+          z += 0.4 * Math.sin((y * u.freqY + u.time * 0.7)) * (ampEffective * 0.5);
           arr[i + 2] = z;
         }
         pos.needsUpdate = true;
         geo.computeVertexNormals();
       }
+
+      // decay interactive boosts
+      speedBoost *= 0.92;
+      ampBoost *= 0.92;
 
       // Apply rotations with pointer parallax lerp
       flag.rotation.x += (baseRotX + targetRotX - flag.rotation.x) * 0.08;
@@ -204,6 +226,8 @@ const NigerianWavesBackground = () => {
       running = false;
       window.removeEventListener('resize', onResize);
       window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('wheel', onWheel);
+      window.removeEventListener('click', onClick);
       window.removeEventListener('pointermove', onPointerMove);
       document.removeEventListener('visibilitychange', onVis);
       geo.dispose();
