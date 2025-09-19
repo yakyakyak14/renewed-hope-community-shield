@@ -54,13 +54,14 @@ const NigerianWavesBackground = () => {
     const amb = new THREE.AmbientLight(0xffffff, 0.18);
     scene.add(hemi, dir, amb);
 
-    // Geometry & Material (scaled down 40%)
-    const scale = 0.6;
+    // Geometry & Material (scaled down from original 40%, then +15% larger)
+    const scale = 0.69; // 0.6 * 1.15
     const width = 3 * scale, height = 2 * scale, segX = 128, segY = 96;
     const geo = new THREE.PlaneGeometry(width, height, segX, segY);
     const basePositions = geo.attributes.position.array.slice() as Float32Array;
 
-    const svg = "<svg xmlns='http://www.w3.org/2000/svg' width='900' height='600' viewBox='0 0 3 2'><rect width='3' height='2' fill='#008753'/><rect x='1' width='1' height='2' fill='#ffffff'/></svg>";
+    // 20% greener: original #008753 -> increase green channel ~20% to #00A253
+    const svg = "<svg xmlns='http://www.w3.org/2000/svg' width='900' height='600' viewBox='0 0 3 2'><rect width='3' height='2' fill='#00A253'/><rect x='1' width='1' height='2' fill='#ffffff'/></svg>";
     const dataUrl = 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
     const texLoader = new THREE.TextureLoader();
     const tex = texLoader.load(dataUrl);
